@@ -8,11 +8,7 @@
     <ProjectGuid>{A5A0B155-9F58-4ADB-84F7-58B1BF3889CC}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>FLRPC</RootNamespace>
-<<<<<<< Updated upstream:FLStudioRPC.csproj
-    <AssemblyName>FLStudioRPC</AssemblyName>
-=======
     <AssemblyName>FLRPC</AssemblyName>
->>>>>>> Stashed changes:FLRPC.csproj
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <LangVersion>latest</LangVersion>
     <FileAlignment>512</FileAlignment>

@@ -91,7 +91,16 @@ public static class Program
             IntPtr hWndConsole = GetConsoleWindow();
             ShowWindow(hWndConsole, SW_HIDE); // Hide the console window
             FreeConsole(); // Make it disappear from existence
+            Run();
+        } else
+        {
+            Run();
         }
+
+    }
+
+    static void Run()
+    {
 
         // Save default config with default values (also load it at startup, the function is already called in SaveConfig)
         SaveConfig(ConfigPath);
