@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33627.172
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FLStudioRPC", "FLStudioRPC.csproj", "{A5A0B155-9F58-4ADB-84F7-58B1BF3889CC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FLRPC", "FLRPC.csproj", "{A5A0B155-9F58-4ADB-84F7-58B1BF3889CC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

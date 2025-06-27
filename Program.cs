@@ -17,14 +17,29 @@ using static ConfigValues;
 
 // Memory stuff
 using static Utils;
+using System.Runtime.InteropServices;
 
 public static class Program
 {
+
+    // Import WINAPI functions
+    [DllImport("kernel32.dll")]
+    static extern IntPtr GetConsoleWindow();
+
+    [DllImport("user32.dll")]
+    static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+    [DllImport("kernel32.dll")]
+    static extern bool FreeConsole();
+
+    // Constant for hiding the window
+    const int SW_HIDE = 0;
+
     // Initialize a new Rich Presence client
     public static DiscordRpcClient _Client;
 
     // Configuration file location
-    public static readonly string ConfigPath = "fls_rpc_config.json";
+    public static readonly string ConfigPath = Path.Combine(Path.GetTempPath(), "fls_rpc_config.json");
 
     // Initialize a placeholder, because we don't want null reference exceptions
     private static RichPresence _RPC = new RichPresence()
@@ -63,6 +78,21 @@ public static class Program
 
     static void Main(string[] args)
     {
+        if (args.Length > 0 && args[0] == "-?")
+        {
+            Console.WriteLine("FL Studio Rich Presence by zfi2 /|\\ Forked by Adrik-LOL", Color.LightSkyBlue);
+            Console.WriteLine("Usage: FLRPC [options]", Color.LightSkyBlue);
+            Console.WriteLine("Options:", Color.LightSkyBlue);
+            Console.WriteLine("  -?          Show this help message", Color.LightSkyBlue);
+            Console.WriteLine("  -console    Show the console window", Color.LightSkyBlue);
+        } else if (args.Length == 0 || (args.Length > 0 && args[0] != "-console"))
+        {
+            // Get the current console window
+            IntPtr hWndConsole = GetConsoleWindow();
+            ShowWindow(hWndConsole, SW_HIDE); // Hide the console window
+            FreeConsole(); // Make it disappear from existence
+        }
+
         // Save default config with default values (also load it at startup, the function is already called in SaveConfig)
         SaveConfig(ConfigPath);
 
