@@ -8,10 +8,11 @@ A simple, yet cool way to show off your FL Studio projects to your friends and o
 
 - Secret mode (meaning others can't see what project you're working on)
 - Display optional accurate FL Studio version (ex. FL Studio 20.8.4.1873)
-- A JSON-based easy-to-manage configuration system stored on %temp% and it's called "fls_rpc_config.json"
+- A GUI based easy-to-manage configuration editor ("FLRPC.exe -configfile" to edit and "FLRPC.exe -reset" to delete the current configuratoin)
 - Portable executable without having to have dlls if you want to use the app
 - Arguments to use the app from console
 - Hidden window so you can forget about the app running and won't accidentally close it (Have to be closed with the task manager)
+- Works without user activity, detects if FL Studio is open or not to start/stop the RPC
 
 ## Pros
 - Very lightweight and resource efficient
@@ -28,6 +29,10 @@ A simple, yet cool way to show off your FL Studio projects to your friends and o
 
 ![RPC Screenshot 2](https://i.imgur.com/viJFFoI.png)
 
+![RPC Screenshot 3](https://i.ibb.co/pr3YtYy9/Screenshot-2025-06-28-141502.png)
+
+![RPC Screenshot 4](https://i.ibb.co/vxMKq8mG/Screenshot-2025-06-28-141627.png)
+
 ## Installation
 
 You can either simply run the pre-compiled release, or build it yourself! I currently use .NET Framework 4.8.0 (although you could probably downgrade it if you build the project yourself)
@@ -40,7 +45,7 @@ If you have any feedback, reach out to me on discord - @AdrianoTech
 
 - Actual FL Studio integration
 
-- Optional GUI Interface
+- ~Optional GUI Interface~
 
 - More features
 
