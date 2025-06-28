@@ -79,6 +79,12 @@ public static class Utils
         return null;
     }
 
+    // Check if FL Studio is running by looking for processes with names "FL" or "FL64"
+    public static bool IsFLStudioRunning()
+    {
+        return Process.GetProcessesByName("FL").Length > 0 || Process.GetProcessesByName("FL64").Length > 0;
+    }
+
     public static void LogException(Exception ex, string functionInfo = "")
     {
         try
@@ -101,6 +107,8 @@ public static class Utils
                 // Separator for better readability
                 writer.WriteLine(new string('-', 50)); 
             }
+
+            Process.Start(LogFilePath);
         }
         catch (Exception logEx)
         {

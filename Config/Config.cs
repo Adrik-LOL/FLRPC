@@ -124,8 +124,8 @@ public static class ConfigSettings
                     {
                         var defaultValueAttribute = (DefaultValueAttribute)Attribute.GetCustomAttribute(prop, typeof(DefaultValueAttribute));
 
-                    // Handle different types
-                    return ConvertValue(defaultValueAttribute.Value, prop.PropertyType);
+                        // Handle different types
+                        return ConvertValue(defaultValueAttribute.Value, prop.PropertyType);
                     });
 
             // Serialize the properties to JSON

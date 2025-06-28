@@ -18,6 +18,8 @@ using static ConfigValues;
 // Memory stuff
 using static Utils;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
+using FLRPC.Config;
 
 public static class Program
 {
@@ -83,61 +85,113 @@ public static class Program
             Console.WriteLine("FL Studio Rich Presence by zfi2 /|\\ Forked by Adrik-LOL", Color.LightSkyBlue);
             Console.WriteLine("Usage: FLRPC [options]", Color.LightSkyBlue);
             Console.WriteLine("Options:", Color.LightSkyBlue);
-            Console.WriteLine("  -?          Show this help message", Color.LightSkyBlue);
-            Console.WriteLine("  -console    Show the console window", Color.LightSkyBlue);
-        } else if (args.Length == 0 || (args.Length > 0 && args[0] != "-console"))
-        {
-            // Get the current console window
-            IntPtr hWndConsole = GetConsoleWindow();
-            ShowWindow(hWndConsole, SW_HIDE); // Hide the console window
-            FreeConsole(); // Make it disappear from existence
-            Run();
-        } else
-        {
-            Run();
+            Console.WriteLine("  -?            Show this help message", Color.LightSkyBlue);
+            Console.WriteLine("  -console      Show the console window", Color.LightSkyBlue);
+            Console.WriteLine("  -configfile   Opens the Config file", Color.LightSkyBlue);
+            Console.WriteLine("  -reset        Resets (by deleting) the configuration file", Color.LightSkyBlue);
         }
+        else if (args.Length > 0 && args[0] == "-configfile")
+        {
+            if (!File.Exists(ConfigPath))
+            {
+                Console.WriteLine("Configuration file not found, Start the program first.", Color.Yellow);
+            }
+            else
+            {
+                var configForm = new ConfigFile();
+                configForm.ShowDialog();
+            }
+        }
+        else if (args.Length > 0 && args[0] == "-reset")
+        {
+            try
+            {
+                if (File.Exists(ConfigPath))
+                {
+                    File.Delete(ConfigPath);
+                    Console.WriteLine("Configuration file deleted successfully.", Color.Green);
+                }
+                else
+                {
+                    Console.WriteLine("Configuration file not found.", Color.Yellow);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error deleting configuration file: {ex.Message}", Color.Red);
+                Utils.LogException(ex, "Main");
+            }
+        }
+        else if (args.Length == 0 || (args.Length > 0 && args[0] != "-console"))
+        {
+            IntPtr hWndConsole = GetConsoleWindow();
+            ShowWindow(hWndConsole, SW_HIDE);
+            FreeConsole();
+            while (true) // Loop to check if FL Studio is running
+            {
+                if (Utils.IsFLStudioRunning()) // Check if FL Studio is running
+                {
+                    Console.WriteLine("FL Studio is running!", Color.Green);
+                    Run(); // Start the Rich Presence loop
+                }
+                else
+                {
+                    Console.WriteLine("FL Studio is not running. Waiting...", Color.Yellow);
+                    Thread.Sleep(5000); // Wait 5 seconds and check again
+                }
+            }
+        }
+        else
+        {
+            while (true)
+            {
+                if (Utils.IsFLStudioRunning())
+                {
+                    Console.WriteLine("FL Studio is running!", Color.Green);
+                    Run();
+                }
+                else
+                {
+                    Console.WriteLine("FL Studio is not running. Waiting...", Color.Yellow);
+                    Thread.Sleep(5000);
+                }
+            }
+        }
+
 
     }
 
     static void Run()
     {
 
-        // Save default config with default values (also load it at startup, the function is already called in SaveConfig)
         SaveConfig(ConfigPath);
 
-        // If DisplayConfigInfo is enabled, read all settings from file and print them
+        // Display the config info if enabled
         if (DisplayConfigInfo)
         {
             try
             {
-                // Read JSON from file
                 string json = File.ReadAllText(ConfigPath);
-
-                // Deserialize JSON to dictionary
                 var properties = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
 
-                // Print each setting to console
                 foreach (var property in properties)
-                {
                     Console.WriteLine($"{property.Key} => {property.Value}", Color.White);
-                }
             }
             catch (Exception ex)
             {
-                // Handle exception (e.g., file not found, invalid JSON format)
                 Console.WriteLine($"Error loading configuration from file: {ex.Message}", Color.Red);
                 Utils.LogException(ex, "Main");
             }
-            // Extra newline after the configuration output
-            Console.WriteLine();
+
+            Console.WriteLine(); // Extra newline after config output
         }
 
         Console.WriteLine("Initializing the rich presence...", Color.LightSkyBlue);
 
-        // Initialize the Rich Presence
+        // Start Discord RPC client
         InitializeRPC();
 
-        // Initialize a timestamp if it's enabled in the config
+        // Add a timestamp to the RPC if the user enabled it
         if (ShowTimestamp)
         {
             _RPC.Timestamps = new Timestamps()
@@ -146,31 +200,47 @@ public static class Program
             };
         }
 
-        // If client is valid, continue the loop
+        // Loop while the Discord client is active
         while (_Client != null)
         {
-            // Retrieve the FL Studio data constantly, so that we're up to date
+            // Check if FL Studio is no longer running
+            if (!IsFLStudioRunning())
+            {
+                Console.WriteLine("FL Studio was closed. Shutting down RPC...", Color.OrangeRed);
+
+                // Clear presence from Discord
+                _Client.ClearPresence();
+
+                // Cleanly shut down the client
+                _Client.Dispose();
+                _Client = null;
+
+                break; // Exit the loop
+            }
+
+            // Get current data from FL Studio (e.g. project name, mode)
             FLInfo FLStudioData = GetFLInfo();
 
-            // Invoke event handlers
+            // Invoke Discord RPC event handlers
             _Client.Invoke();
 
-            // Check if AppName and ProjectName are both empty or null
+            // Check if there's no active project
             bool NoProject = string.IsNullOrEmpty(FLStudioData.AppName) && string.IsNullOrEmpty(FLStudioData.ProjectName);
 
-            // Set details and state based on conditions
+            // Set the RPC "Details" and "State"
             _RPC.Details = NoProject ? "FL Studio (inactive)" : FLStudioData.AppName;
             _RPC.State = NoProject ? "No project" : FLStudioData.ProjectName ?? "Empty project";
 
-            // Check if secret mode is enabled and set the state accordingly
+            // If SecretMode is enabled, hide the project name
             if (SecretMode)
                 _RPC.State = "Working on a hidden project";
 
-            // Finally, set the presence
-            _Client?.SetPresence(_RPC);
+            // Push the updated Rich Presence to Discord
+            _Client.SetPresence(_RPC);
 
-            // Sleep for the interval defined in the config file
+            // Wait for the interval defined in the config (usually ~1000ms)
             Thread.Sleep(UpdateInterval);
         }
     }
+
 }

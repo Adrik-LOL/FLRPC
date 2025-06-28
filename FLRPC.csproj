@@ -94,6 +94,12 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Config\ConfigFile.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Config\ConfigFile.Designer.cs">
+      <DependentUpon>ConfigFile.cs</DependentUpon>
+    </Compile>
     <Compile Include="Memory\Utils.cs" />
     <Compile Include="Config\Config.cs" />
     <Compile Include="Program.cs" />
@@ -121,6 +127,11 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Config\ConfigFile.resx">
+      <DependentUpon>ConfigFile.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="packages\Fody.6.8.2\build\Fody.targets" Condition="Exists('packages\Fody.6.8.2\build\Fody.targets')" />
