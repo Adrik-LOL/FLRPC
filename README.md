@@ -8,7 +8,7 @@ A simple, yet cool way to show off your FL Studio projects to your friends and o
 
 - Secret mode (meaning others can't see what project you're working on)
 - Display optional accurate FL Studio version (ex. FL Studio 20.8.4.1873)
-- A GUI based easy-to-manage configuration editor ("FLRPC.exe -configfile" to edit and "FLRPC.exe -reset" to delete the current configuratoin)
+- A GUI based easy-to-manage configuration editor ("FLRPC.exe -configfile" to edit and "FLRPC.exe -reset" to delete the current configuration)
 - Portable executable without having to have dlls if you want to use the app
 - Arguments to use the app from console
 - Hidden window so you can forget about the app running and won't accidentally close it (Have to be closed with the task manager)
