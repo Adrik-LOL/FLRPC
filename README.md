@@ -20,7 +20,7 @@ A simple, yet cool way to show off your FL Studio projects to your friends and o
 - Almost everything is commented, so the code is easily manageable and readable
 
 ## Cons
-- No integration into actual FL Studio (meaning it must run in the background as a console app while FL Studio is running)
+- No integration into actual FL Studio (meaning it must run in the background)
 - ~Has very little features (as of now)~ I'm working on it :D
 
 ## Screenshots
